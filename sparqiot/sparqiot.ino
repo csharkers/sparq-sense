@@ -138,12 +138,25 @@ void loop() {
       TCA9548A(3);
       amg.readPixels(pixels);
       
+    // Convert the pixels array to a JSON string
+      String thermoMat = "[";
+      for (int i = 0; i < AMG88xx_PIXEL_ARRAY_SIZE; i++) {
+        thermoMat += String(pixels[i], 2); // 2 decimal places for floats
+        if (i < AMG88xx_PIXEL_ARRAY_SIZE - 1) {
+          thermoMat += ",";
+        }
+      }
+      thermoMat += "]";
 
+      // Build the payload with the matrix
       String payload = String("{\"sens_id\":") + sens_id +
-                 ",\"temp\":" + (ahtTemp * 100) +
-                 ",\"humi\":" + (ahtHumi * 100) +
-                 ",\"carb\":" + ensco2 +
-                 ",\"sens_name\":\"" + sens_name + "\"}";
+            ",\"temp\":" + (ahtTemp * 100) +
+            ",\"humi\":" + (ahtHumi * 100) +
+            ",\"carb\":" + ensco2 +
+            ",\"sens_name\":\"" + sens_name + "\"" +
+            ",\"thermo_mat\":" + thermoMat +
+            "}"; // matrix now included
+
 
 
       http.addHeader("Content-Type", "application/json");
